@@ -38,16 +38,14 @@ class Array
     return new_array
   end
 
-  def combine_with(second_array = [])
-    array_to_be_returned = []
-    upper_limit = ([self.size, second_array.size].max - 1)
-    0.upto(upper_limit).each do |i|
-    array_to_be_returned << self[i] if self[i]
-    array_to_be_returned << second_array[i] if second_array[i]
-    end
-    return array_to_be_returned
-  end
+  def combine_with(other = [])
+    longer, shorter = self.length > other.length ? [self, other] : [other, self]
 
+    combined = take(shorter.length).zip(other.take(shorter.length)).flatten(1)
+    rest     = longer.drop(shorter.length)
+
+    combined + rest
+  end
 end
 
 
