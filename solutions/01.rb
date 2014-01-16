@@ -13,7 +13,7 @@ class Integer
   end
 
   def harmonic
-      (1..self).map { |a| 1 / a.to_r } .reduce(:+) if (self > 0)
+    (1..self).map { |a| 1 / a.to_r } .reduce(:+) if (self > 0)
   end
 
   def digits
@@ -22,40 +22,30 @@ class Integer
 end
 
 class Array
-
   def frequencies
-  hash = Hash.new(0)
-
-  self.each { |i| hash[i] += 1 }
-  #hash.each {|key, value| } puts "#{key} appears #{value} times"}
-
-  return hash
+    hash = Hash.new(0)
+    self.each { |i| hash[i] += 1 }
+    return hash
   end
 
   def average
-    if self == []
-      return 0.0
-    else
-            ((self.inject { |sum, current| sum += current } ).to_f / self.size)
-          end
+    reduce(:+) / length.to_f unless empty?
   end
 
   def drop_every(step)
-          new_array = self.dup
-
-          (self.size / step).downto(1).each { |i| new_array.delete_at(i * step - 1) }
-
-          return new_array
+    new_array = self.dup
+    (self.size / step).downto(1).each { |i| new_array.delete_at(i * step - 1) }
+    return new_array
   end
 
   def combine_with(second_array = [])
-          array_to_be_returned = []
+    array_to_be_returned = []
     upper_limit = ([self.size, second_array.size].max - 1)
-          0.upto(upper_limit).each do |i|
-                    array_to_be_returned << self[i] if self[i]
-                array_to_be_returned << second_array[i] if second_array[i]
-            end
-            return array_to_be_returned
+    0.upto(upper_limit).each do |i|
+    array_to_be_returned << self[i] if self[i]
+    array_to_be_returned << second_array[i] if second_array[i]
+    end
+    return array_to_be_returned
   end
 
 end
