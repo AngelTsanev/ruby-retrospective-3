@@ -17,13 +17,8 @@ class Integer
   end
 
   def digits
-          given_digit = self.abs
-    digits_array = []
-
-    while(given_digit > 0)
-      digits_array.insert(0, given_digit.remainder(10))
-      given_digit /= 10
-    end
+    abs.to_s.chars.map(&:to_i)
+  end
 
     return digits_array
   end
