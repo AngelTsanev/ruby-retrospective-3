@@ -19,9 +19,6 @@ class Integer
   def digits
     abs.to_s.chars.map(&:to_i)
   end
-
-    return digits_array
-  end
 end
 
 class Array
