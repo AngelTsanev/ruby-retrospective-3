@@ -1,37 +1,19 @@
 class Integer
-
   def prime?
     (self < 2) ? false : 2.upto(self - 1).all? { |i| remainder(i).nonzero? }
   end
 
   def prime_factors
-    prime_factors_array = []
-    current_number = self.abs
-
-    while (current_number > 1)
-      prime_factors_array << current_number.lowest_prime_devisor
-      current_number /= current_number.lowest_prime_devisor
+    return [] if self == 1
+    2.upto(abs) do |number|
+      if number.prime? and (abs).remainder(number).zero?
+        [number] + (abs / number).prime_factors
+      end
     end
-
-    return prime_factors_array
-  end
-
-  def lowest_prime_devisor
-          given_number = self
-
-          2.upto(given_number).each do |likely_divisor|
-            if likely_divisor.prime? and given_number.remainder(likely_divisor).zero?
-                    return likely_divisor
-            end
-          end
   end
 
   def harmonic
-          if self == 1
-            Rational(1,1)
-          else
-            1.upto(self).inject { |sum, current| sum += Rational(1,current) }
-    end
+      (1..self).map { |a| 1 / a.to_r } .reduce(:+) if (self > 0)
   end
 
   def digits
