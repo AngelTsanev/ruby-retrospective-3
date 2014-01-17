@@ -6,77 +6,87 @@ class Task
     @priority = arguments[2].downcase.to_sym
     @tags = (arguments[3] or "").split(', ')
   end
-end
-module CriteriaOperations
-  def |(other)
-    #
-  end
-
-  def &(other)
-    #
-  end
-
-  def !(expresion)
-    #
+  def self.parse_line line
+    task_attrs = line.split('|').map do |attr|
+      attr.strip
+    end
+    Task.new *task_attrs
   end
 end
 class Criteria
-  include CriteriaOperations
-  attr_accessor :priority, :status, :tags
+  attr_accessor :proc
 
-  def initialize()
-    @priority = []
-    @status = []
-    @tags = []
+  def initialize(proc)
+    @proc = proc
   end
 
-  def priority(priority_symbol)
-    @priority << priority_symbol
+  class << self
+    def status(target_status)
+      new { |task| task.status == target_status }
+    end
+
+    def priority(target_priority)
+      new { |task| task.priority == target_priority }
+    end
+
+    def tags(target_tags)
+      new { |task| (target_tags - task.tags).empty? }
+    end
   end
 
-  def status(status_symbol)
-    @status << status_symbol
+  def !
+    Criteria.new { |task| not @proc.call(task) }
   end
 
-  def tags(tags_array)
-    @tags << tags_array
+  def &(other)
+    Criteria.new { |task| @proc.call(task) and other.proc.call(task) }
+  end
+
+  def |(other)
+    Criteria.new { |task| @proc.call(task) or other.proc.call(task) }
   end
 end
-module TodoListStatistics
+
+class TodoList
+  include Enumarable
+  attr_accessor :task_list
+
+  def initialize(list)
+    @task_list = list
+  end
+
+  def each
+    @task_list.each{ |task| yield task }
+  end
+
+  def self.parse(text)
+    tasks = text.each_line.map do |line|
+      Task.parse_line line
+    end
+    TodoList.new tasks
+  end
+
+  def filter(criteria)
+    TodoList.new select(&criteria)
+  end
+
+  def adjoin(other)
+    TodoList.new to_a | other.to_a
+  end
+
   def tasks_todo
-    our_task_list.select { |task| task.status == :todo } .size
+    count(&Criteria.status(:todo))
   end
 
   def tasks_in_progress
-    our_task_list.select { |task| task.status == :current } .size
+    count(&Criteria.status(:current))
   end
 
   def tasks_completed
-    our_task_list.select { |task| task.status == :done } .size
+    count(&Criteria.status(:done))
   end
 
   def completed?
-    our_task_list.all? { |task| task.status == :done }
-  end
-end
-class TodoList
-  include Enumerable
-  include TodoListStatistics
-  attr_reader :our_task_list
-
-  @our_task_list = []
-
-  def initialize(arguments)
-    @our_task_list = arguments
-  end
-  def self.parse(text)
-    task_list = []
-    text.split(/\n\t*/).each_with_index do |line|
-    task_list << Task.new(line.split(/ *\| */))
-    end
-    TodoList.new(task_list)
-  end
-  def each
-    @our_task_list.each{ |task| yield task }
+    all?(&Criteria.status(:done))
   end
 end
