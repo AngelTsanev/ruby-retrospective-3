@@ -47,5 +47,3 @@ class Array
     combined + rest
   end
 end
-
-puts 360.prime_factors
