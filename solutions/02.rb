@@ -1,11 +1,13 @@
 class Task
   attr_reader :status, :description, :status, :tags
+
   def initialize(arguments)
     @status = arguments[0].downcase.to_sym
     @description = arguments[1]
     @priority = arguments[2].downcase.to_sym
     @tags = (arguments[3] or "").split(', ')
   end
+  
   def self.parse_line line
     task_attrs = line.split('|').map do |attr|
       attr.strip
@@ -13,6 +15,7 @@ class Task
     Task.new *task_attrs
   end
 end
+
 class Criteria
   attr_accessor :proc
 
