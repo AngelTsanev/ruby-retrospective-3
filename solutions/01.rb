@@ -4,12 +4,12 @@ class Integer
   end
 
   def prime_factors
-    return [] if self == 1
-    2.upto(abs) do |number|
-      if number.prime? and (abs).remainder(number).zero?
-        [number] + (abs / number).prime_factors
+    2.upto(abs).each do |number|
+      if abs.remainder(number).zero? and number.prime?
+        return [number] + (abs / number).prime_factors
       end
     end
+    []
   end
 
   def harmonic
@@ -48,4 +48,4 @@ class Array
   end
 end
 
-
+puts 360.prime_factors
